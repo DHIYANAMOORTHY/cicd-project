@@ -1,0 +1,54 @@
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out source code'
+                checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                bat 'npm install'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                bat 'npm run build'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                bat 'npm test'
+            }
+        }
+
+        stage('Integration') {
+            steps {
+                echo 'Integration stage completed'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                bat 'if not exist deploy mkdir deploy'
+                bat 'copy app.js deploy\\app.js'
+                bat 'copy package.json deploy\\package.json'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'CI/CD Pipeline executed successfully!'
+        }
+        failure {
+            echo 'CI/CD Pipeline failed. Check the console log.'
+        }
+    }
+}
